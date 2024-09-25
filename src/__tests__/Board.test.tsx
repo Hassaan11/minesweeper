@@ -20,9 +20,17 @@ vi.mock('react-toastify', async () => {
 const MockUpdateContextProvider = ({ children }: any) => {
   const mockUpdate = false;
   const mockSetUpdate = vi.fn();
+  const mockDisplayBoard = false;
+  const mockSetDisplayBoard = vi.fn();
+  const mockResetState = false;
+  const mockSetResetState = vi.fn();
 
   return (
-    <UpdateContext.Provider value={{ update: mockUpdate, setUpdate: mockSetUpdate }}>
+    <UpdateContext.Provider value={{
+      update: mockUpdate, setUpdate: mockSetUpdate,
+      displayBoard: mockDisplayBoard, setDisplayBoard: mockSetDisplayBoard,
+      resetState: mockResetState, setResetState: mockSetResetState,
+    }}>
       {children}
     </UpdateContext.Provider>
   );
