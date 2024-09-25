@@ -20,13 +20,13 @@ describe('Board Component', () => {
     vi.restoreAllMocks();  // Restore mocks after each test
   });
   it('renders the board with cells', () => {
-    render(<Board name="bot" width={5} height={5} numMines={3} />);
+    render(<Board width={5} height={5} numMines={3} update={true} setUpdate={() => vi.fn()} />);
     const cells = screen.queryAllByTestId("cells");
     expect(cells.length).toBe(25);
   });
 
   it('reveals a cell when clicked', () => {
-    render(<Board name="bot" width={3} height={3} numMines={1} />);
+    render(<Board width={3} height={3} numMines={1} update={true} setUpdate={() => vi.fn()} />);
     const firstCell = screen.queryAllByTestId("cells")[0];
     fireEvent.click(firstCell);
     expect(firstCell.getAttribute("class")).toContain('bg-white')
@@ -34,14 +34,14 @@ describe('Board Component', () => {
   });
 
   it('shows "You Won!" when all non-mine cells are revealed', () => {
-    render(<Board name="bot" width={3} height={3} numMines={0} />);
+    render(<Board width={3} height={3} numMines={0} update={true} setUpdate={() => vi.fn()} />);
     const cells = screen.queryAllByTestId("cells");
     cells.forEach((cell) => fireEvent.click(cell));
     expect(toast.success).toHaveBeenCalledWith("Congratulations! You've Won!");
   });
 
   it('shows "You Lose!" when a mine is revealed', async () => {
-    render(<Board name="bot" width={3} height={3} numMines={9} />);
+    render(<Board width={3} height={3} numMines={9} update={true} setUpdate={() => vi.fn()} />);
     const cells = screen.queryAllByTestId("cells");
     cells.forEach((cell) => fireEvent.click(cell));
     await waitFor(() => {

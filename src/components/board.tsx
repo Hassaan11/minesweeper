@@ -12,10 +12,11 @@ interface CellType {
 }
 
 interface BoardProps {
-  name: string;
   width: number;
   height: number;
   numMines: number;
+  setUpdate: (arg: boolean) => void;
+  update: boolean
 }
 
 const DIRECTIONS = [
@@ -72,7 +73,7 @@ const calculateNeighbors = (
   });
 };
 
-const Board: React.FC<BoardProps> = ({ name, width, height, numMines }) => {
+const Board: React.FC<BoardProps> = ({ update, setUpdate, width, height, numMines }) => {
   const [board, setBoard] = useState<CellType[][]>([]);
   const [gameStatus, setGameStatus] = useState<{ over: boolean; won: boolean }>(
     { over: false, won: false }
@@ -123,20 +124,19 @@ const Board: React.FC<BoardProps> = ({ name, width, height, numMines }) => {
       toast.error(`Game Over! You hit a mine!`);
     };
     setGameStatus({ over: true, won });
-    const records: { name: string; games: number; won: number }[] = JSON.parse(localStorage.getItem('record') || '[]');
-    const playerName = name || 'bot';
-    const recordIndex = records.findIndex(record => record.name === playerName);
-    if (recordIndex !== -1) {
-      records[recordIndex].games += 1;
-      if (won) {
-        records[recordIndex].won += 1;
-        toast.success(`Congratulations! You've Won!`);
-      }
+    let record: { games: number; won: number } = JSON.parse(localStorage.getItem('record') || '{}');
+    if (Object.keys(record).length > 0) {
+      record.games += 1;
     } else {
-      records.push({ name: playerName, games: 1, won: won ? 1 : 0 });
+      record = { games: 1, won: 0 }
     }
-    localStorage.setItem('record', JSON.stringify(records));
+    if (won) {
+      record.won += 1;
+      toast.success(`Congratulations! You've Won!`);
+    }
+    localStorage.setItem('record', JSON.stringify(record));
     setTimer((prev) => ({ ...prev, running: false }));
+    setUpdate(!update)
   };
 
 
@@ -150,10 +150,9 @@ const Board: React.FC<BoardProps> = ({ name, width, height, numMines }) => {
 
   return (
     <>
-      {name && <h3>Hello <span>{name}</span></h3>}
       <Box
         className="border border-gray-800 mx-auto flex flex-col my-8"
-        sx={{ p: 2 }}
+        sx={{ p: 2, m: 2 }}
         component="section"
       >
         <div className="flex justify-between w-full mb-4">
@@ -163,7 +162,9 @@ const Board: React.FC<BoardProps> = ({ name, width, height, numMines }) => {
         {board.map((row, x) => (
           <div key={x} className="flex">
             {row.map((cell, y) => (
-              <Cell key={y} cell={cell} reveal={() => revealCell(x, y)} />
+              <div className="m-2" key={`${x} ${y}`}>
+                <Cell key={y} cell={cell} reveal={() => revealCell(x, y)} />
+              </div>
             ))}
           </div>
         ))}

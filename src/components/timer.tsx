@@ -6,7 +6,6 @@ interface TimerProps {
 }
 
 const Timer: React.FC<TimerProps> = ({ isRunning, reset }) => {
-  console.log("RESER", reset)
   const [seconds, setSeconds] = useState<number>(0);
 
   useEffect(() => {

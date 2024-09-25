@@ -8,7 +8,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface FormState {
-  name: string;
   height: number;
   width: number;
   mines: number;
@@ -16,13 +15,13 @@ interface FormState {
 
 function App() {
   const [formState, setFormState] = useState<FormState>({
-    name: "Bot",
     height: 0,
     width: 0,
     mines: 0,
   });
 
   const [displayBoard, setDisplayBoard] = useState<boolean>(false);
+  const [update, setUpdate] = useState<boolean>(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -52,8 +51,8 @@ function App() {
 
   return (
     <>
-      <Navbar />
-      <div className='flex flex-col justify-center items-center min-h-screen pt-14'>
+      <Navbar update={update} />
+      <div className='flex flex-col bg-white justify-center items-center min-h-screen pt-14'>
         {!displayBoard ? (
           <Box
             className="border border-gray-800 mx-auto flex flex-col space-y-4"
@@ -62,13 +61,6 @@ function App() {
             noValidate
             autoComplete="off"
           >
-            <TextField
-              id="name"
-              name="name"
-              label="Enter Your Name"
-              variant="standard"
-              onChange={handleInputChange}
-            />
             <TextField
               id="height"
               name="height"
@@ -97,14 +89,15 @@ function App() {
               onChange={handleInputChange}
             />
 
-            <Button variant="contained" className="mt-5" onClick={handleSubmit}>Start</Button>
+            <Button variant="contained" className="!bg-black mt-5" onClick={handleSubmit}>Start</Button>
           </Box>
         ) : (
           <Board
-            name={formState.name}
             width={formState.width}
             height={formState.height}
             numMines={formState.mines}
+            setUpdate={setUpdate}
+            update={update}
           />
         )}
       </div>

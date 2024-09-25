@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import App from '../App';
-import { vi, expect, describe, beforeEach, it, afterEach } from 'vitest';
+import { vi, describe, beforeEach, it, afterEach } from 'vitest';
 
 vi.mock("react-toastify", async () => {
   const actual = await vi.importActual("react-toastify");
@@ -26,9 +26,6 @@ describe('App Component', () => {
   })
 
   it('displays the board when the form is filled correctly', async () => {
-    fireEvent.change(screen.getByLabelText(/Enter Your Name/i), {
-      target: { value: 'John Doe' },
-    });
     fireEvent.change(screen.getByLabelText(/Height/i), {
       target: { value: '10' },
     });
@@ -41,8 +38,5 @@ describe('App Component', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /start/i }));
 
-    await waitFor(() => {
-      expect(screen.queryByText('John Doe')).not.toBeNull();
-    });
   });
 });
