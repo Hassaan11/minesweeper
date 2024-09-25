@@ -4,7 +4,6 @@ interface NavbarProps {
   update: boolean;
 }
 
-
 const Navbar: React.FC<NavbarProps> = ({ update }) => {
   const [record, setRecord] = useState<{ games: number; won: number }>(JSON.parse(localStorage.getItem('record') || '{ }'))
 

@@ -1,20 +1,13 @@
 import React from 'react';
 
-interface CellProps {
-  cell: {
-    mine: boolean;
-    revealed: boolean;
-    neighbors: number;
-  };
-  reveal: () => void;
-}
+import { CellProps } from '../types';
 
 const Cell: React.FC<CellProps> = ({ cell, reveal }) => {
   return (
     <div
       className={`w-10 h-10 flex justify-center items-center bg-gray-900 border border-gray-700 ${cell.revealed ? '!bg-white' : ''
         }`}
-      data-testid='cells'  
+      data-testid='cells'
       onClick={reveal}
     >
       {cell.revealed && (cell.mine ? '💣' : cell.neighbors || '')}
