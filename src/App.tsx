@@ -40,7 +40,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className='flex flex-col justify-center items-center min-h-screen'>
+      <div className='flex flex-col justify-center items-center min-h-screen pt-14'>
         {!displayBoard ? (
           <Box
             className="border border-gray-300 mx-auto flex flex-col space-y-4"
