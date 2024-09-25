@@ -8,7 +8,7 @@ describe('Timer Component', () => {
   })
   it('starts at 0 seconds', () => {
     render(<Timer isRunning={false} reset={false} />);
-    expect(screen.getByText(/Timer: 0/i)).not.toBeNull();
+    expect(screen.getByText(/Time: 0/i)).not.toBeNull();
   });
 
   it('increments time when running', () => {
@@ -17,7 +17,7 @@ describe('Timer Component', () => {
     act(() => {
       vi.advanceTimersByTime(3000); // advance time by 3 seconds
     });
-    expect(screen.getByText(/Timer: 3/i)).not.toBeNull();
+    expect(screen.getByText(/Time: 3/i)).not.toBeNull();
     vi.useRealTimers();
   });
 
@@ -28,6 +28,6 @@ describe('Timer Component', () => {
       vi.advanceTimersByTime(3000);
     });
     rerender(<Timer isRunning={false} reset={true} />);
-    expect(screen.getByText(/Timer: 0/i)).not.toBeNull();
+    expect(screen.getByText(/Time: 0/i)).not.toBeNull();
   });
 });

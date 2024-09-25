@@ -24,7 +24,7 @@ const Timer: React.FC<TimerProps> = ({ isRunning, reset }) => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <span>Timer: {seconds}</span>
+      <span>Time: {seconds}</span>
     </div>
   );
 };

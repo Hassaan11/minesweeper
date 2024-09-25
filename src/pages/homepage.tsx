@@ -57,8 +57,15 @@ const Homepage = () => {
     <div className='flex flex-col bg-white justify-center items-center min-h-screen pt-14'>
       {!displayBoard ? (
         <Box
-          className="border border-gray-800 mx-auto flex flex-col space-y-4"
-          sx={{ m: 1, p: 2, width: 400 }}
+          className="border border-gray-800 mx-auto flex flex-col space-y-4 my-8 bg-white rounded-lg shadow-xl"
+          sx={{
+            m: 1,
+            p: 2,
+            width: 400,
+            background: 'linear-gradient(135deg, #e3f2fd, #f1f8e9)',
+            border: '1px solid #ccc',
+            boxShadow: '0px 10px 20px rgba(0,0,0,0.1)',
+          }}
           component="form"
           noValidate
           autoComplete="off"

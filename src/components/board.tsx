@@ -92,22 +92,32 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
 
   return (
     <Box
-      className="border border-gray-800 mx-auto flex flex-col my-8"
-      sx={{ p: 2, m: 2 }}
+      className="mx-auto flex flex-col items-center p-6 my-8 bg-white rounded-xl shadow-2xl"
       component="section"
+      sx={{
+        background: 'linear-gradient(135deg, #e3f2fd, #f1f8e9)',
+        border: '1px solid #ccc',
+        minWidth: '350px',
+        boxShadow: '0px 10px 20px rgba(0,0,0,0.1)',
+      }}
     >
       {/* Timer and reset button */}
-      <div className="flex justify-between w-full mb-4">
-        <Timer isRunning={timer.running} reset={timer.reset} />
-        <RestartAltIcon onClick={initializeBoard} className="cursor-pointer" />
+      <div className="flex justify-between items-center w-full mb-6">
+        <div className="text-2xl font-semibold text-gray-700">
+          <Timer isRunning={timer.running} reset={timer.reset} />
+        </div>
+        <RestartAltIcon
+          onClick={initializeBoard}
+          className="cursor-pointer text-4xl text-gray-500 hover:text-gray-700 transition-all duration-200 transform hover:scale-110"
+        />
       </div>
 
       {/* Render the game board with cells */}
       {board.map((row, x) => (
         <div key={x} className="flex">
           {row.map((cell, y) => (
-            <div className="m-2" key={`${x} ${y}`}>
-              <Cell key={y} cell={cell} reveal={() => revealCell(x, y)} />
+            <div key={`${x}-${y}`} className="m-1 transition-all hover:scale-105">
+              <Cell key={`${x}-${y}`} cell={cell} reveal={() => revealCell(x, y)} />
             </div>
           ))}
         </div>
