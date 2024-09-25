@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -11,7 +11,7 @@ import { FormState } from '../types';
 import { useUpdateContext } from '../context/UpdateContext';
 
 const Homepage = () => {
-  const { displayBoard, setDisplayBoard } = useUpdateContext();
+  const { displayBoard, setDisplayBoard, resetState } = useUpdateContext();
   const [formState, setFormState] = useState<FormState>({
     height: 0,
     width: 0,
@@ -28,6 +28,14 @@ const Homepage = () => {
     }));
   };
 
+  useEffect(() => {
+    setFormState({
+      height: 0,
+      width: 0,
+      mines: 0,
+    })
+  }, [resetState])
+
   const handleSubmit = () => {
     const { height, width, mines } = formState;
     const area = width * height
@@ -42,7 +50,6 @@ const Homepage = () => {
       toast.error(`Mines must be at least 1 and less than(${area})!`);
       return;
     }
-
     setDisplayBoard(true);
   };
 
