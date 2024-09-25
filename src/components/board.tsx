@@ -96,7 +96,7 @@ const Board: React.FC<BoardProps> = ({ name, width, height, numMines }) => {
     setBoard(newBoard);
     setGameStatus({ over: false, won: false });
     setCellsLeft(width * height - numMines);
-    setTimer({ running: false, reset: true });
+    setTimer({ running: true, reset: !timer.reset });
   };
 
   const revealCell = (x: number, y: number) => {
@@ -150,7 +150,7 @@ const Board: React.FC<BoardProps> = ({ name, width, height, numMines }) => {
 
   return (
     <>
-      {name && <h3>Hello {name}</h3>}
+      {name && <h3>Hello <span>{name}</span></h3>}
       <Box
         className="border border-gray-800 mx-auto flex flex-col my-8"
         sx={{ p: 2 }}
