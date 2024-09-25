@@ -1,3 +1,4 @@
+// This component is displaying the seconds of game
 import React, { useEffect, useState } from 'react';
 
 interface TimerProps {

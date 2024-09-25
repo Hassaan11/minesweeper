@@ -8,16 +8,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import { MIN_COUNT, MAX_COUNT } from '../constants';
 import Board from '../components/board';
 import { FormState } from '../types';
+import { useUpdateContext } from '../context/UpdateContext';
 
 const Homepage = () => {
+  const { displayBoard, setDisplayBoard } = useUpdateContext();
   const [formState, setFormState] = useState<FormState>({
     height: 0,
     width: 0,
     mines: 0,
   });
-
-  // Controls whether the board is displayed after submitting form inputs
-  const [displayBoard, setDisplayBoard] = useState<boolean>(false);
 
   // Handles input change in the form, updates the form state dynamically
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,15 +30,16 @@ const Homepage = () => {
 
   const handleSubmit = () => {
     const { height, width, mines } = formState;
+    const area = width * height
 
-    // Validation
-    if (height < MIN_COUNT || height > MAX_COUNT || width < MIN_COUNT || width > MAX_COUNT) {
+    // Validation of board
+    if ((height < MIN_COUNT || height > MAX_COUNT) || (width < MIN_COUNT || width > MAX_COUNT)) {
       toast.error("Height and Width must be between 2 and 50!");
       return;
     }
 
-    if (mines < 1 || mines >= width * height) {
-      toast.error(`Mines must be at least 1 and less than(${width * height})!`);
+    if (mines < 1 || mines >= area) {
+      toast.error(`Mines must be at least 1 and less than(${area})!`);
       return;
     }
 
