@@ -2,6 +2,7 @@ import React from 'react';
 
 import { CellProps } from '../types';
 
+// Renders an individual cell with conditional styles and content based on its state
 const Cell: React.FC<CellProps> = ({ cell, reveal }) => {
   return (
     <div

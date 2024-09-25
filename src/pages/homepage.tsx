@@ -4,23 +4,22 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { toast } from 'react-toastify';
 
-
 import 'react-toastify/dist/ReactToastify.css';
 import { MIN_COUNT, MAX_COUNT } from '../constants';
 import Board from '../components/board';
-import { FormState, HomepageProps } from '../types';
+import { FormState } from '../types';
 
-
-
-const Homepage: React.FC<HomepageProps> = ({ update, setUpdate }) => {
+const Homepage = () => {
   const [formState, setFormState] = useState<FormState>({
     height: 0,
     width: 0,
     mines: 0,
   });
 
+  // Controls whether the board is displayed after submitting form inputs
   const [displayBoard, setDisplayBoard] = useState<boolean>(false);
 
+  // Handles input change in the form, updates the form state dynamically
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -92,8 +91,6 @@ const Homepage: React.FC<HomepageProps> = ({ update, setUpdate }) => {
           width={formState.width}
           height={formState.height}
           numMines={formState.mines}
-          setUpdate={setUpdate}
-          update={update}
         />
       )}
     </div>

@@ -1,6 +1,7 @@
 import { CellType } from "../types";
 import direction from '../constants/directions.json'
 
+// Generates an empty board of the given width and height with cells initialized (no mines or neighbors)
 export const generateEmptyBoard = (width: number, height: number): CellType[][] => {
   return Array.from({ length: height }, () =>
     Array.from({ length: width }, () => ({
@@ -11,6 +12,7 @@ export const generateEmptyBoard = (width: number, height: number): CellType[][] 
   );
 };
 
+// Places a specified number of mines randomly on the board
 export const placeMines = (
   board: CellType[][],
   numMines: number,
@@ -21,6 +23,8 @@ export const placeMines = (
   while (placedMines < numMines) {
     const x = Math.floor(Math.random() * height);
     const y = Math.floor(Math.random() * width);
+
+    // Only place the mine if the cell doesn't already contain one
     if (!board[x][y].mine) {
       board[x][y].mine = true;
       placedMines++;
@@ -28,14 +32,17 @@ export const placeMines = (
   }
 };
 
+// Counts the number of neighboring mines around a given cell
+// x refers to Horizontal and y refers to Vertical
 export const countNeighbors = (board: CellType[][], x: number, y: number): number => {
   return direction.DIRECTIONS.reduce((count, [dx, dy]) => {
-    const nx = x + dx;
-    const ny = y + dy;
-    return count + (board[nx]?.[ny]?.mine ? 1 : 0);
+    const newX = x + dx;
+    const newY = y + dy;
+    return count + (board[newX]?.[newY]?.mine ? 1 : 0);
   }, 0);
 };
 
+// Calculates the number of neighboring mines for each cell on the board
 export const calculateNeighbors = (
   board: CellType[][],
 ) => {
@@ -48,7 +55,7 @@ export const calculateNeighbors = (
   });
 };
 
-
+// Reveals all mines on the board when the game is over
 export const revealAllMines = (board: CellType[][]) => {
   board.forEach((row) =>
     row.forEach((cell) => {
