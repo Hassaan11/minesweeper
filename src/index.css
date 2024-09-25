@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body{
+  background:url(https://codetheweb.blog/assets/img/posts/css-advanced-background-images/cover.jpg) no-repeat center center fixed;
+  background-size:cover;   
+}

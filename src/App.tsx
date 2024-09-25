@@ -4,8 +4,11 @@ import { useState, ChangeEvent } from 'react';
 import Navbar from './components/navbar';
 import Button from '@mui/material/Button';
 import Board from './components/board';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface FormState {
+  name: string;
   height: number;
   width: number;
   mines: number;
@@ -13,6 +16,7 @@ interface FormState {
 
 function App() {
   const [formState, setFormState] = useState<FormState>({
+    name: "Bot",
     height: 0,
     width: 0,
     mines: 0,
@@ -25,16 +29,25 @@ function App() {
 
     setFormState((prevState) => ({
       ...prevState,
-      [name]: parseInt(value)
+      [name]: value
     }));
   };
 
   const handleSubmit = () => {
-    if (Object.values(formState).some((value) => value === "")) {
-      alert("All fields are required!");
-    } else {
-      setDisplayBoard(true)
+    const { height, width, mines } = formState;
+
+    // Validation
+    if (height < 2 || height > 100 || width < 2 || width > 100) {
+      toast.error("Height and Width must be between 2 and 100!");
+      return;
     }
+
+    if (mines < 1 || mines >= width * height) {
+      toast.error(`Mines must be at least 1 and less than (${width * height})!`);
+      return;
+    }
+
+    setDisplayBoard(true);
   };
 
   return (
@@ -43,12 +56,19 @@ function App() {
       <div className='flex flex-col justify-center items-center min-h-screen pt-14'>
         {!displayBoard ? (
           <Box
-            className="border border-gray-300 mx-auto flex flex-col space-y-4"
+            className="border border-gray-800 mx-auto flex flex-col space-y-4"
             sx={{ m: 1, p: 2, width: 400 }}
             component="form"
             noValidate
             autoComplete="off"
           >
+            <TextField
+              id="name"
+              name="name"
+              label="Enter Your Name"
+              variant="standard"
+              onChange={handleInputChange}
+            />
             <TextField
               id="height"
               name="height"
@@ -77,18 +97,20 @@ function App() {
               onChange={handleInputChange}
             />
 
-            <Button variant="outlined" className="mt-5" onClick={handleSubmit}>Start</Button>
+            <Button variant="contained" className="mt-5" onClick={handleSubmit}>Start</Button>
           </Box>
         ) : (
           <Board
+            name={formState.name}
             width={formState.width}
             height={formState.height}
             numMines={formState.mines}
           />
         )}
       </div>
+      <ToastContainer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

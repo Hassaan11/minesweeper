@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Cell from './cell';
+import Timer from './timer';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import Box from '@mui/material/Box';
+import { toast } from 'react-toastify';
 
 interface CellType {
   mine: boolean;
@@ -8,6 +12,7 @@ interface CellType {
 }
 
 interface BoardProps {
+  name: string;
   width: number;
   height: number;
   numMines: number;
@@ -67,7 +72,7 @@ const calculateNeighbors = (
   });
 };
 
-const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
+const Board: React.FC<BoardProps> = ({ name, width, height, numMines }) => {
   const [board, setBoard] = useState<CellType[][]>([]);
   const [gameStatus, setGameStatus] = useState<{ over: boolean; won: boolean }>(
     { over: false, won: false }
@@ -75,6 +80,10 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
   const [cellsLeft, setCellsLeft] = useState<number>(
     width * height - numMines
   );
+  const [timer, setTimer] = useState<{ running: boolean; reset: boolean }>({
+    running: false,
+    reset: false,
+  });
 
   useEffect(() => {
     initializeBoard();
@@ -87,6 +96,7 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
     setBoard(newBoard);
     setGameStatus({ over: false, won: false });
     setCellsLeft(width * height - numMines);
+    setTimer({ running: false, reset: true });
   };
 
   const revealCell = (x: number, y: number) => {
@@ -108,9 +118,27 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
   };
 
   const endGame = (newBoard: CellType[][], won: boolean) => {
-    if (!won) revealAllMines(newBoard);
+    if (!won) {
+      revealAllMines(newBoard)
+      toast.error(`Game Over! You hit a mine!`);
+    };
     setGameStatus({ over: true, won });
+    const records: { name: string; games: number; won: number }[] = JSON.parse(localStorage.getItem('record') || '[]');
+    const playerName = name || 'bot';
+    const recordIndex = records.findIndex(record => record.name === playerName);
+    if (recordIndex !== -1) {
+      records[recordIndex].games += 1;
+      if (won) {
+        records[recordIndex].won += 1;
+        toast.success(`Congratulations! You've Won!`);
+      }
+    } else {
+      records.push({ name: playerName, games: 1, won: won ? 1 : 0 });
+    }
+    localStorage.setItem('record', JSON.stringify(records));
+    setTimer((prev) => ({ ...prev, running: false }));
   };
+
 
   const revealAllMines = (board: CellType[][]) => {
     board.forEach((row) =>
@@ -122,15 +150,24 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
 
   return (
     <>
-      {board.map((row, x) => (
-        <div key={x} className="flex">
-          {row.map((cell, y) => (
-            <Cell key={y} cell={cell} reveal={() => revealCell(x, y)} />
-          ))}
+      {name && <h3>Hello {name}</h3>}
+      <Box
+        className="border border-gray-800 mx-auto flex flex-col my-8"
+        sx={{ p: 2 }}
+        component="section"
+      >
+        <div className="flex justify-between w-full mb-4">
+          <Timer isRunning={timer.running} reset={timer.reset} />
+          <RestartAltIcon onClick={initializeBoard} className="cursor-pointer" />
         </div>
-      ))}
-      {gameStatus.over && !gameStatus.won && <h2>You lose!</h2>}
-      {gameStatus.won && <h2>You Won!</h2>}
+        {board.map((row, x) => (
+          <div key={x} className="flex">
+            {row.map((cell, y) => (
+              <Cell key={y} cell={cell} reveal={() => revealCell(x, y)} />
+            ))}
+          </div>
+        ))}
+      </Box>
     </>
   );
 };
