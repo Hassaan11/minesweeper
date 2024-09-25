@@ -3,19 +3,22 @@ import Box from '@mui/material/Box';
 import { useState, ChangeEvent } from 'react';
 import Navbar from './components/navbar';
 import Button from '@mui/material/Button';
+import Board from './components/board';
 
 interface FormState {
-  height: string;
-  width: string;
-  mines: string;
+  height: number;
+  width: number;
+  mines: number;
 }
 
 function App() {
   const [formState, setFormState] = useState<FormState>({
-    height: '',
-    width: '',
-    mines: '',
+    height: 0,
+    width: 0,
+    mines: 0,
   });
+
+  const [displayBoard, setDisplayBoard] = useState<boolean>(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,7 +33,7 @@ function App() {
     if (Object.values(formState).some((value) => value === "")) {
       alert("All fields are required!");
     } else {
-      console.log("formState", formState)
+      setDisplayBoard(true)
     }
   };
 
@@ -38,43 +41,51 @@ function App() {
     <>
       <Navbar />
       <div className='flex flex-col justify-center items-center min-h-screen'>
-        <Box
-          className="border border-gray-300 mx-auto flex flex-col space-y-4"
-          sx={{ m: 1, p: 2, width: 400 }}
-          component="form"
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            id="height"
-            name="height"
-            label="Height"
-            variant="standard"
-            type='number'
-            required
-            onChange={handleInputChange}
-          />
-          <TextField
-            id="width"
-            name="width"
-            label="Width"
-            variant="standard"
-            type='number'
-            required
-            onChange={handleInputChange}
-          />
-          <TextField
-            id="mines"
-            name="mines"
-            label="Mines"
-            variant="standard"
-            type='number'
-            required
-            onChange={handleInputChange}
-          />
+        {!displayBoard ? (
+          <Box
+            className="border border-gray-300 mx-auto flex flex-col space-y-4"
+            sx={{ m: 1, p: 2, width: 400 }}
+            component="form"
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              id="height"
+              name="height"
+              label="Height"
+              variant="standard"
+              type='number'
+              required
+              onChange={handleInputChange}
+            />
+            <TextField
+              id="width"
+              name="width"
+              label="Width"
+              variant="standard"
+              type='number'
+              required
+              onChange={handleInputChange}
+            />
+            <TextField
+              id="mines"
+              name="mines"
+              label="Mines"
+              variant="standard"
+              type='number'
+              required
+              onChange={handleInputChange}
+            />
 
-          <Button variant="outlined" className="mt-5" onClick={handleSubmit}>Start</Button>
-        </Box>
+            <Button variant="outlined" className="mt-5" onClick={handleSubmit}>Start</Button>
+          </Box>
+        ) : (
+          <Board
+            width={formState.width}
+            height={formState.height}
+            numMines={formState.mines}
+          />
+        )}
       </div>
     </>
   )
