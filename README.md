@@ -1,7 +1,15 @@
 # Minesweeper Game
 
 ## Overview
-This project is an implementation of the classic Minesweeper game, developed using React with TypeScript. It is a basic web game that features a customizable grid, allowing players to specify the width, height, and number of mines. The game effectively manages fundamental gameplay logic, including win and loss conditions, as well as a timer.
+This project is an implementation of the classic Minesweeper game, developed using React with TypeScript and powered by Vite for lightning-fast builds and a smooth development experience. The game features a customizable grid, allowing players to specify the width, height, and number of mines. It handles all fundamental gameplay logic, including win and loss conditions, as well as a built-in timer.
+
+You can play the deployed version of the game [here](https://minesweeper-gamma-seven.vercel.app/).
+
+## Technology Stack
+- **Frontend**: React, TypeScript
+- **Build Tool**: Vite
+- **Testing**: Vitest
+- **Deployment**: Vercel
 
 ## Core Project Files
 - **Homepage.js**: Serves as the landing page where users can input the parameters for the game board.
