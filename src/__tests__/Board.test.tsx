@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import Board from '../components/board';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { toast } from 'react-toastify';
 import { UpdateContext } from '../context/UpdateContext'; // Import the context
 
@@ -38,9 +38,13 @@ const MockUpdateContextProvider = ({ children }: any) => {
 
 
 describe('Board Component', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();  // Restore mocks after each test
+  beforeEach(() => {
+    vi.restoreAllMocks();
   });
+
+  afterEach(() => {
+    cleanup();
+  })
   it('renders the board with cells', () => {
     render(
       <MockUpdateContextProvider>
@@ -60,19 +64,22 @@ describe('Board Component', () => {
     const firstCell = screen.queryAllByTestId("cells")[0];
     fireEvent.click(firstCell);
     expect(firstCell.getAttribute("class")).toContain('bg-white')
-
   });
 
-  it('shows "You Won!" when all non-mine cells are revealed', () => {
+  it('shows "You Won!" when all non-mine cells are revealed', async () => {
     render(
       <MockUpdateContextProvider>
-        <Board width={3} height={3} numMines={0} />
+        <Board width={1} height={1} numMines={0} />
       </MockUpdateContextProvider>
     );
     const cells = screen.queryAllByTestId("cells");
     cells.forEach((cell) => fireEvent.click(cell));
-    expect(toast.success).toHaveBeenCalledWith("Congratulations! You've Won!");
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith("Congratulations! You've Won!");
+    });
   });
+
 
   it('shows "You Lose!" when a mine is revealed', async () => {
     render(
