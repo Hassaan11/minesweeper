@@ -20,72 +20,59 @@ You can play the deployed version of the game [here](https://minesweeper-gamma-s
 
 ### Key Functions
 
-1. **`generateEmptyBoard(width: number, height: number): CellType[][]`**
-   - **Purpose**: Initializes a blank board of specified dimensions without any mines or neighbor counts.
-   - **Implementation**: Utilizes `Array.from` to create a 2D array, where each cell is an object containing `mine`, `revealed`, and `neighbors` properties.
+**`initializeBoardEfficiently`**
 
-
-   ```typescript
-   export const generateEmptyBoard = (width: number, height: number): CellType[][] => {
-     return Array.from({ length: height }, () =>
-       Array.from({ length: width }, () => ({
-         mine: false,
-         revealed: false,
-         neighbors: 0,
-       }))
-     );
-   };
-   ```
-
-2. **`placeMines(board: CellType[][], numMines: number, width: number, height: number)`**
-   - **Purpose**: Randomly places a specified number of mines on the board.
-   - **Implementation**:Continuously selects random coordinates and places a mine if the cell is empty, ensuring that the number of placed mines matches `numMines`.
-
+- **Purpose**: Initializes a game board of specified dimensions, placing mines and calculating the number of neighboring mines for each cell.
+  
+- **Implementation**: 
+   - Utilizes a shuffle-based approach to randomly place mines in the board.
+   - It employs `Array.from` to create a 2D array of cells, where each cell is an object containing `mine`, `revealed`, and `neighbors` properties.
+   - After placing the mines, it calculates the neighbor counts for each cell surrounding a mine using predefined directions from a JSON file.
 
    ```typescript
-   export const placeMines = (board: CellType[][], numMines: number, width: number, height: number) => {
-      let placedMines = 0;
-      while (placedMines < numMines) {
-        const x = Math.floor(Math.random() * height);
-        const y = Math.floor(Math.random() * width);
-        if (!board[x][y].mine) {
-          board[x][y].mine = true;
-          placedMines++;
-        }
-      }
-    };
-   ```
+   export const initializeAndFillBoard = (width: number, height: number, numMines: number): CellType[][] => {
+   const size = width * height;
 
-3. **`countNeighbors(board: CellType[][], x: number, y: number): number`**
-   - **Purpose**: Counts the number of mines surrounding a specific cell.
-   - **Implementation**:Utilizes predefined directions to iterate through neighboring cells and count how many contain mines.
+   // Create a flattened array for the board cells
+   const cells = Array(size).fill(0).map(() => ({
+      mine: false,
+      revealed: false,
+      neighbors: 0
+   }));
 
+   // Randomly shuffle the array, placing mines in the first `numMines` positions
+   const indices = Array.from({ length: size }, (_, index) => index);
+   for (let i = size - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+   }
 
-   ```typescript
-   export const countNeighbors = (board: CellType[][], x: number, y: number): number => {
-      return direction.DIRECTIONS.reduce((count, [dx, dy]) => {
-        const newX = x + dx;
-        const newY = y + dy;
-        return count + (board[newX]?.[newY]?.mine ? 1 : 0);
-      }, 0);
-    };
-   ```
+   // Place mines in the first `numMines` cells
+   for (let i = 0; i < numMines; i++) {
+      const idx = indices[i];
+      cells[idx].mine = true;
 
-4. **`calculateNeighbors(board: CellType[][])`**
-   - **Purpose**: Updates the `neighbors` property for each cell that does not contain a mine.
-   - **Implementation**:Iterates through each cell and calls countNeighbors to set the appropriate count.
+      // Calculate neighbors for each mine placed
+      const x = Math.floor(idx / width);
+      const y = idx % width;
 
-
-   ```typescript
-   export const calculateNeighbors = (board: CellType[][]) => {
-      board.forEach((row, i) => {
-        row.forEach((cell, j) => {
-          if (!cell.mine) {
-            cell.neighbors = countNeighbors(board, i, j);
-          }
-        });
+      direction.DIRECTIONS.forEach(([dx, dy]) => {
+         const newX = x + dx;
+         const newY = y + dy;
+         if (newX >= 0 && newX < height && newY >= 0 && newY < width) {
+         cells[newX * width + newY].neighbors++;
+         }
       });
-    };
+   }
+
+   // Reshape the 1D array back into a 2D array
+   const board: CellType[][] = [];
+   for (let i = 0; i < height; i++) {
+      board.push(cells.slice(i * width, (i + 1) * width));
+   }
+
+   return board;
+   };
    ```
 
 ## Code Optimization

@@ -2,7 +2,7 @@ import { CellType } from "../types";
 import direction from '../constants/directions.json'
 
 // This function uses a shuffle-based approach for placing mines, and updates the count of neighboring mines for each cell immediately after mine placement.
-export const initializeBoardEfficiently = (width: number, height: number, numMines: number): CellType[][] => {
+export const initializeAndFillBoard = (width: number, height: number, numMines: number): CellType[][] => {
   const size = width * height;
 
   // Create a flattened array for the board cells

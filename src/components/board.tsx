@@ -7,7 +7,7 @@ import { BoardProps, CellType } from '../types';
 import { useUpdateContext } from '../context/UpdateContext';
 import Cell from './cell';
 import Timer from './timer';
-import { initializeBoardEfficiently, revealAllMines } from '../utils';
+import { initializeAndFillBoard, revealAllMines } from '../utils';
 
 const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
   const { update, setUpdate } = useUpdateContext();
