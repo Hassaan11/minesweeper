@@ -16,9 +16,6 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
   const [gameStatus, setGameStatus] = useState<{ over: boolean; won: boolean }>(
     { over: false, won: false }
   );
-  const [cellsLeft, setCellsLeft] = useState<number>(
-    width * height - numMines
-  );
   const [timer, setTimer] = useState<{ running: boolean; reset: boolean }>({
     running: false,
     reset: false,
@@ -28,18 +25,15 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
     initializeBoard();
   }, [width, height, numMines]);
 
-
+  // Function to initialize the board
   const initializeBoard = () => {
-    const newBoard = initializeBoardEfficiently(width, height, numMines)
+    const newBoard = initializeBoardEfficiently(width, height, numMines);
     setBoard(newBoard);
     setGameStatus({ over: false, won: false });
-    setCellsLeft(width * height - numMines);
     setTimer({ running: true, reset: !timer.reset });
   };
 
-  // Recursive function to reveal empty cells and their neighbors on a Minesweeper board.
-  // This function is called when an empty cell (with 0 neighboring mines) is clicked or revealed.
-  // It reveals all adjacent empty cells and stops at cells that have neighboring mines.
+  // Recursive function to reveal empty cells and their neighbors
   const revealEmptyCells = (board: CellType[][], row: number, col: number) => {
     for (let i = -1; i <= 1; i++) {
       for (let j = -1; j <= 1; j++) {
@@ -61,9 +55,21 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
     }
   };
 
+  // Function to count how many non-mine, unrevealed cells are left
+  const countNonMineUnrevealedCells = (board: CellType[][]) => {
+    let count = 0;
+    board.forEach(row => {
+      row.forEach(cell => {
+        if (!cell.revealed && !cell.mine) {
+          count++;
+        }
+      });
+    });
+    return count;
+  };
+
   // Function to reveal a cell when clicked
   const revealCell = (x: number, y: number) => {
-    // If the game is over or the cell is already revealed, do nothing
     if (gameStatus.over || board[x][y].revealed) return;
 
     const newBoard = [...board];
@@ -74,46 +80,40 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
     if (cell.mine) {
       endGame(newBoard, false);
     } else {
-      setCellsLeft((prev) => prev - 1);
       if (newBoard[x][y].neighbors === 0) {
         revealEmptyCells(newBoard, x, y);
       }
 
-      // If no more non-mine cells are left, the player wins
-      if (cellsLeft - 1 === 0) {
+      // If all non-mine cells are revealed, the player wins
+      const cellsLeft = countNonMineUnrevealedCells(newBoard);
+      if (cellsLeft === 0) {
         endGame(newBoard, true);
       }
     }
     setBoard(newBoard);
   };
 
-  // Function to handle end of the game
+  // Function to handle the end of the game
   const endGame = (newBoard: CellType[][], won: boolean) => {
-    // If the game is lost, reveal all mines and show a toast notification
     if (!won) {
-      revealAllMines(newBoard)
+      revealAllMines(newBoard);
       toast.error(`You Lost! You hit a mine!`);
-    };
+    } else {
+      toast.success(`Congratulations! You've Won!`);
+    }
     setGameStatus({ over: true, won });
 
-    // Retrieve the game record from localStorage or initialize a new one
     let record: { games: number; won: number } = JSON.parse(localStorage.getItem('record') || '{}');
     if (Object.keys(record).length > 0) {
       record.games += 1;
     } else {
-      record = { games: 1, won: 0 }
+      record = { games: 1, won: 0 };
     }
+    if (won) record.won += 1;
 
-    // If the player wins, increment the win count and show a success toast
-    if (won) {
-      record.won += 1;
-      toast.success(`Congratulations! You've Won!`);
-    }
-
-    // Save the updated game record in localStorage and stop the timer
     localStorage.setItem('record', JSON.stringify(record));
     setTimer((prev) => ({ ...prev, running: false }));
-    setUpdate(!update)
+    setUpdate(!update);
   };
 
   return (
