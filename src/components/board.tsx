@@ -27,7 +27,7 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
 
   // Function to initialize the board
   const initializeBoard = () => {
-    const newBoard = initializeBoardEfficiently(width, height, numMines);
+    const newBoard = initializeAndFillBoard(width, height, numMines);
     setBoard(newBoard);
     setGameStatus({ over: false, won: false });
     setTimer({ running: true, reset: !timer.reset });
