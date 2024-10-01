@@ -7,7 +7,7 @@ import { BoardProps, CellType } from '../types';
 import { useUpdateContext } from '../context/UpdateContext';
 import Cell from './cell';
 import Timer from './timer';
-import { generateEmptyBoard, placeMines, calculateNeighbors, revealAllMines } from '../utils';
+import { initializeBoardEfficiently, revealAllMines } from '../utils';
 
 const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
   const { update, setUpdate } = useUpdateContext();
@@ -28,14 +28,37 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
     initializeBoard();
   }, [width, height, numMines]);
 
+
   const initializeBoard = () => {
-    const newBoard = generateEmptyBoard(width, height);
-    placeMines(newBoard, numMines, width, height);
-    calculateNeighbors(newBoard);
+    const newBoard = initializeBoardEfficiently(width, height, numMines)
     setBoard(newBoard);
     setGameStatus({ over: false, won: false });
     setCellsLeft(width * height - numMines);
     setTimer({ running: true, reset: !timer.reset });
+  };
+
+  // Recursive function to reveal empty cells and their neighbors on a Minesweeper board.
+  // This function is called when an empty cell (with 0 neighboring mines) is clicked or revealed.
+  // It reveals all adjacent empty cells and stops at cells that have neighboring mines.
+  const revealEmptyCells = (board: CellType[][], row: number, col: number) => {
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        const newRow = row + i;
+        const newCol = col + j;
+        if (
+          newRow >= 0 &&
+          newRow < width &&
+          newCol >= 0 &&
+          newCol < height &&
+          !board[newRow][newCol].revealed
+        ) {
+          board[newRow][newCol].revealed = true;
+          if (board[newRow][newCol].neighbors === 0) {
+            revealEmptyCells(board, newRow, newCol);
+          }
+        }
+      }
+    }
   };
 
   // Function to reveal a cell when clicked
@@ -52,6 +75,9 @@ const Board: React.FC<BoardProps> = ({ width, height, numMines }) => {
       endGame(newBoard, false);
     } else {
       setCellsLeft((prev) => prev - 1);
+      if (newBoard[x][y].neighbors === 0) {
+        revealEmptyCells(newBoard, x, y);
+      }
 
       // If no more non-mine cells are left, the player wins
       if (cellsLeft - 1 === 0) {
